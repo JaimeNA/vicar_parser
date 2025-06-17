@@ -11,6 +11,10 @@ Vicar::~Vicar() {
 }
 
 // === Private ===
+int getInteger(std::string str) {
+    while ()
+}
+
 void Vicar::parse(const std::string filename) {
     std::ifstream file;
 
@@ -37,10 +41,17 @@ void Vicar::parse(const std::string filename) {
 
     std::string token;
     
-    // System labels
-    while (file >> token) {
+    // === System labels ===
 
+    // LBLSIZE
+
+
+
+    while (file >> token) {
         std::cout << token << std::endl;
+
+
     }
 
 }
+
