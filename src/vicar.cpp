@@ -11,8 +11,17 @@ Vicar::~Vicar() {
 }
 
 // === Private ===
-int getInteger(std::string str) {
-    while ()
+int Vicar::get_integer(std::string str) {
+    size_t i = 0;
+
+    // Travese string until equals or end-of-string
+    while (str[i] != '\0' && str[i++] != '=');
+
+    if (str[i] == '\0') {
+        // TODO: Error handling
+    }
+
+    return std::stoi(str);
 }
 
 void Vicar::parse(const std::string filename) {
@@ -44,14 +53,15 @@ void Vicar::parse(const std::string filename) {
     // === System labels ===
 
     // LBLSIZE
+    file >> token;
+    std::cout << get_integer(token) << std::endl;
 
 
+    // while (file >> token) {
+    //     std::cout << token << std::endl;
 
-    while (file >> token) {
-        std::cout << token << std::endl;
 
-
-    }
+    // }
 
 }
 

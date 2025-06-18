@@ -34,6 +34,7 @@ public:
 private:
     // === Helper functions ===
 
+    int get_integer(std::string str);
     void parse(std::string filename);
 
     // === System labels ===

@@ -3,7 +3,7 @@ CFLAGS	=
 INCLUDES = -I./src/include
 LFLAGS	=	-g	-Wall
 LIBS	=	
-SRCS	=	$(wildcard src/*.cpp) 
+SRCS	=	$(wildcard src/*.cpp) main.cpp
 OBJS	=	$(SRCS:.cpp=.o)
 MAIN	=	vicar
 
@@ -19,7 +19,7 @@ $(MAIN):	$(OBJS)
 		$(CC)	$(CFLAGS)	$(INCLUDES)	-c	$<	-o	$@
 
 clean:
-		$(RM)	*.o *~	$(MAIN)
+		rm -rf src/*.o *.o
 
 depend: $(SRCS)
 		makedepend	$(INCLUDES)	$^
