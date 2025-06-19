@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 #define DEBUG_LOG(x) "DEBUG::" << x
 
@@ -25,6 +26,13 @@ enum class Host{ALLIANT = 0, CRAY, DECSTATN, HP_700, MAC_AUX, MAC_MPW, SGI, SUN_
 enum class IntPixels{LOW = 0, HIGH};
 enum class RealFtm{IEEE = 0, RIEEE, VAX};
 
+std::unordered_map<std::string, Format> stringToFormat = { { "BYTE", Format::BYTE },
+                                                    { "HALF", Format::HALF },
+                                                    { "FULL", Format::FULL },
+                                                    { "REAL", Format::REAL },
+                                                    { "DOUB", Format::DOUB },
+                                                    { "COMP", Format::COMP } };
+
 class Vicar {
 public:
 	Vicar(std::string filename);
@@ -34,7 +42,13 @@ public:
 private:
     // === Helper functions ===
 
-    int get_integer(std::string str);
+    /* Returns string after '=' */
+    bool get_token(std::ifstream &file, std::string *str, std::string token);
+    std::string get_value(std::string token);
+
+    std::string get_string(std::string token); // Parse the vicar string, remove ' ' 
+    int get_integer(std::string token);
+    float get_real(std::string token);
     void parse(std::string filename);
 
     // === System labels ===
