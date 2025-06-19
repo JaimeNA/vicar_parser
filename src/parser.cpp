@@ -96,6 +96,8 @@ Vicar Parser::parse() {
     bin_label.int_ftm = string_to_int_ftm[get_string("BINTFMT")];
     bin_label.real_ftm = string_to_real_ftm[get_string("BREALFMT")];
     bin_label.type = get_string("BLTYPE");
+    bin_label.num_bytes_prefix = get_integer("NBB");
+    bin_label.num_lines_header = get_integer("NLB");
     
     // Layout
     Layout layout;
@@ -144,7 +146,7 @@ Vicar Parser::parse() {
     }
 
     dim.size_fourth = 0;
-    
+
     return Vicar(meta, bin_label, layout, dim);
 }
 

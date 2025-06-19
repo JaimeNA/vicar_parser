@@ -7,4 +7,5 @@ int main(int argc, char **argv) {
     Vicar img = parser.parse();
 
     img.print();
+    img.make_pgm("test.pgm");
 }

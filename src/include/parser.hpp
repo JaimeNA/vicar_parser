@@ -35,6 +35,7 @@ private:
     std::string get_string(std::string token); // Parse the vicar string, remove ' ' 
     int get_integer(std::string token);
     float get_real(std::string token);
+    // TODO: Add sopport for property and history labels
 };
 
 #endif // _PARSER_HPP_

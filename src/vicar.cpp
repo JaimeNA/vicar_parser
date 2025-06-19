@@ -1,5 +1,6 @@
 #include <vicar.hpp>
 
+//TODO: Switch to PNG or TIFF
 // === Public ===
 
 Vicar::Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions) {
@@ -17,7 +18,11 @@ Vicar::~Vicar() {
 void Vicar::print() {
     std::cout << "====== DATA ======" << std::endl << std::endl;
 
+    // Binary label
+    std::cout << "--- BINARY LABEL --- " << std::endl;
     std::cout << "Binary label: " << bin_label.type << std::endl;
+    std::cout << "Bytes of binary prefix: " << bin_label.num_bytes_prefix << std::endl;
+    std::cout << "Lines of binary header: " << bin_label.num_lines_header << std::endl << std::endl;
 
     // Layout attributes
     std::cout << "--- LAYOUT --- " << std::endl;
@@ -28,14 +33,61 @@ void Vicar::print() {
     std::cout << "Record size: " << layout.recsize << std::endl;
     std::cout << "Number of lines: " << layout.num_lines << std::endl;
     std::cout << "Number of samples: " << layout.num_samples << std::endl;
-    std::cout << "Number of bands: " << layout.num_bands << std::endl;
+    std::cout << "Number of bands: " << layout.num_bands << std::endl << std::endl;
 
     // Dimensions
     std::cout << "--- DIMENSIONS --- " << std::endl;
     std::cout << "First dimension size: " << dimensions.size_first << std::endl;
     std::cout << "Second dimension size: " << dimensions.size_second << std::endl;
     std::cout << "Third dimension size: " << dimensions.size_third << std::endl;
-    std::cout << "Fourth dimension size: " << dimensions.size_fourth << std::endl;
+    std::cout << "Fourth dimension size: " << dimensions.size_fourth << std::endl << std::endl;
 
 }
 
+
+void Vicar::make_pgm(const std::string filename) {
+    std::ofstream out_file(filename, std::ios::out | std::ios::binary);
+
+    if (!out_file) {
+        std::cerr << "ERROR::MAKE_PGM: Error opening file!" << std::endl;
+        return ;
+    }
+
+    // https://netpbm.sourceforge.net/doc/pgm.html
+    // Use a string as a buffer to place the parsed metadata before writing it into the file
+    std::string buffer = "P5";
+
+    char newline = '\n';
+
+    out_file.write(&buffer[0], buffer.size()); // Add identifier
+    out_file.write(&newline, sizeof(newline));
+
+    // Width
+    buffer = std::to_string(dimensions.size_first);
+    out_file.write(&buffer[0], buffer.size()); 
+
+    out_file.write(&newline, sizeof(newline));  // Add whitespace, in this case, a new line
+    // Height
+    buffer = std::to_string(dimensions.size_second);
+    out_file.write(&buffer[0], buffer.size()); 
+    
+    out_file.write(&newline, sizeof(newline));
+
+    // TEST
+
+    buffer = std::to_string(255);
+    out_file.write(&buffer[0], buffer.size()); 
+    out_file.write(&newline, sizeof(newline));
+
+    for (int i = 0; i < dimensions.size_second; i++) {
+        for (int j = 0; j < dimensions.size_first; j++) {
+            int value = (i * j) % 255;
+
+            out_file.write(reinterpret_cast<char*>(&value), 1);
+            
+        }
+    }
+
+    //out_file.write(reinterpret_cast<char*>(&PGM_IDENTIFIER), sizeof(PGM_IDENTIFIER));
+    out_file.close();
+}

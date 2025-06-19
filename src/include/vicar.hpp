@@ -61,6 +61,7 @@ public:
 	~Vicar();
 
     void print();
+    void make_pgm(const std::string filename);
 
 private:
     // === System labels ===
