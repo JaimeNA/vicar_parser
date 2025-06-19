@@ -1,5 +1,10 @@
-#include<vicar.hpp>
+#include <parser.hpp>
 
 int main(int argc, char **argv) {
-    Vicar vicar("resources/test.img");
+
+    Parser parser("resources/test.img");
+
+    Vicar img = parser.parse();
+
+    img.print();
 }

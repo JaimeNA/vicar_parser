@@ -15,11 +15,11 @@ all:	$(MAIN)
 $(MAIN):	$(OBJS) 
 		$(CC)	$(CFLAGS)	$(INCLUDES)	-o	$(MAIN)	$(OBJS)	$(LFLAGS)	$(LIBS)
 
-.cpp.o:
+%.o: %.cpp
 		$(CC)	$(CFLAGS)	$(INCLUDES)	-c	$<	-o	$@
 
 clean:
-		rm -rf src/*.o *.o
+		rm -rf $(OBJS) $(MAIN)
 
 depend: $(SRCS)
 		makedepend	$(INCLUDES)	$^
