@@ -106,9 +106,9 @@ void Vicar::make_pgm(const std::string filename) {
     std::cout << DEBUG_LOG("Pixel size: ") << pixel_size << std::endl;
     for (int i = 0; i < dimensions.size_second; i++) {
         for (int j = 0; j < dimensions.size_first; j++) {
-            int value =(( image_records[i].data[j*2] << 8) + image_records[i].data[j*2+1]);
+            uint8_t value[2] = { image_records[i].data[j*2+1], image_records[i].data[j*2]};
 
-            out_file.write(reinterpret_cast<char*>(&value), pixel_size);
+            out_file.write(reinterpret_cast<char*>(value), pixel_size);
         }
     }
 
