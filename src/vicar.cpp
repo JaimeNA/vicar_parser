@@ -3,11 +3,13 @@
 //TODO: Switch to PNG or TIFF
 // === Public ===
 
-Vicar::Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions) {
+Vicar::Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions, std::vector<ImageRecord> image_records) {
     this->metadata = metadata;
     this->bin_label = bin_label;
     this->layout = layout;
     this->dimensions = dimensions;
+
+    this->image_records = image_records;
 }
 
 
@@ -74,17 +76,38 @@ void Vicar::make_pgm(const std::string filename) {
     out_file.write(&newline, sizeof(newline));
 
     // TEST
+    int pixel_size = 0;
+    switch (metadata.format) {
+        case Format::BYTE:
+            pixel_size = 1;
+            break;
+        case Format::HALF:
+            pixel_size = 2;
+            break;
+        case Format::FULL:
+        case Format::REAL:
+            pixel_size = 4;
+            break;
+        case Format::DOUB:
+        case Format::COMP:   // Two reals
+            pixel_size = 8;
+            break;
+    };
 
-    buffer = std::to_string(255);
+    if (pixel_size > 2) {
+        std::cerr << "ERROR::MAKE_PGM: Unsopported pixel size" << std::endl;
+    }
+
+    buffer = std::to_string((int)pow(2, pixel_size*8) - 1); // Get max value(considering it unsigned)
+    //buffer = std::to_string(255);
     out_file.write(&buffer[0], buffer.size()); 
     out_file.write(&newline, sizeof(newline));
 
     for (int i = 0; i < dimensions.size_second; i++) {
         for (int j = 0; j < dimensions.size_first; j++) {
-            int value = (i * j) % 255;
-
-            out_file.write(reinterpret_cast<char*>(&value), 1);
-            
+            int value = image_records[i].data[j];
+            //std::cout << DEBUG_LOG("Value: ") << value << std::endl;
+            out_file.write(reinterpret_cast<char*>(&value), pixel_size);
         }
     }
 

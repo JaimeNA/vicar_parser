@@ -147,10 +147,10 @@ Vicar Parser::parse() {
 
     dim.size_fourth = 0;
 
-    return Vicar(meta, bin_label, layout, dim);
+    return Vicar(meta, bin_label, layout, dim, get_image_records(meta, bin_label, layout, dim));
 }
 
-// === Private ===
+// === Labels area ===
 
 /* Returns string length if successful, otherwise returns -1 */
 bool Parser::get_token(std::string *str, std::string token) {
@@ -222,6 +222,61 @@ float Parser::get_real(std::string token) {
     }
 
     return std::stof(get_value(str));
+}
+
+// === Image area ===
+// TODO: Define internal structs more clearly, check if there is a better way of doing this
+std::vector<ImageRecord> Parser::get_image_records(Metadata &meta, BinaryLabel &bin_label, Layout &layout, Dimensions &dim) {
+    size_t records_size = dim.size_second*dim.size_third;
+    std::vector<ImageRecord> to_return(records_size);
+
+    // Get number of bytes per pixel
+    int pixel_size = 1;
+    switch (meta.format) {
+        case Format::BYTE:
+            pixel_size = 1;
+            break;
+        case Format::HALF:
+            pixel_size = 2;
+            break;
+        case Format::FULL:
+        case Format::REAL:
+            pixel_size = 4;
+            break;
+        case Format::DOUB:
+        case Format::COMP:   // Two reals
+            pixel_size = 8;
+            break;
+    };
+
+    std::cout << DEBUG_LOG("Pixel size: ") << pixel_size << std::endl;
+
+    // Move to the beggining of image records
+    size_t binary_header_size = bin_label.num_lines_header*layout.recsize;
+    
+    file.seekg(layout.lblsize + binary_header_size, std::ios::beg );
+
+    char* p_data; // Used for reading chunks of the file
+
+    for (int i = 0; i < records_size; i++) {
+        to_return[i].binary_prefix = std::vector<uint8_t>(bin_label.num_bytes_prefix);  // Initialize it
+
+        p_data = reinterpret_cast<char*>(to_return[i].binary_prefix.data());
+        file.read(p_data, bin_label.num_bytes_prefix);  // Read chunk of data
+
+
+        to_return[i].data = std::vector<uint8_t>(dim.size_first*pixel_size);  // Initialize it
+
+        p_data = reinterpret_cast<char*>(to_return[i].data.data());
+        file.read(p_data, dim.size_first*pixel_size);  // Read chunk of data
+
+        if (!file) {
+            std::cerr << "ERROR::IMAGE_RECORDS: Reading record " << i << std::endl;
+            break;
+        }
+    }
+
+    return to_return;
 }
 
 

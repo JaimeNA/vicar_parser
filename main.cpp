@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
 
-    Parser parser("resources/test.img");
+    Parser parser("resources/test1.img");
 
     Vicar img = parser.parse();
 

@@ -1,11 +1,13 @@
 #ifndef _VICAR_HPP_
 #define _VICAR_HPP_
 
+#include <cstdint>
 #include <string>
 #include <fstream>
 #include <vector>
 #include <iostream>
 #include <unordered_map>
+#include <math.h>
 
 #define DEBUG_LOG(x) "DEBUG::" << x
 
@@ -19,6 +21,7 @@ enum class Host{ALLIANT = 0, CRAY, DECSTATN, HP_700, MAC_AUX, MAC_MPW, SGI, SUN_
 enum class IntFtm{LOW = 0, HIGH};
 enum class RealFtm{IEEE = 0, RIEEE, VAX};
 
+// === Labels area ===
 struct Metadata {
     Format format;
     Type type;
@@ -55,27 +58,37 @@ struct Dimensions {
     int size_fourth; // Not implemented, defaults to 0
 };
 
+// === Image area ===
+struct ImageRecord {
+    std::vector<uint8_t> binary_prefix;
+    std::vector<uint8_t> data;
+};
+
 class Vicar {
 public:
-	Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions);
+	Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions, std::vector<ImageRecord> image_records);
 	~Vicar();
 
     void print();
     void make_pgm(const std::string filename);
 
 private:
-    // === System labels ===
+    // === Labels area ===
+    // System labels
     Metadata metadata;
     BinaryLabel bin_label;
 
     Layout layout;
     Dimensions dimensions;
     
-    // === Property labels ===
+    // Property labels
     std::vector<std::string> properties;
 
-    // === History labels ===
+    // History labels
     std::vector<std::string> history;
+
+    // == Image area ===
+    std::vector<ImageRecord> image_records;
 };
 
 #endif // _VICAR_HPP_

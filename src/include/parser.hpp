@@ -1,6 +1,7 @@
 #ifndef _PARSER_HPP_
 #define _PARSER_HPP_
 
+#include <cstdint>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -26,8 +27,7 @@ public:
 private:
     std::ifstream file;
 
-    // === Helper functions ===
-
+    // === Labels area ===
     /* Returns string after '=' */
     bool get_token(std::string *str, std::string token);
     std::string get_value(std::string token);
@@ -36,6 +36,9 @@ private:
     int get_integer(std::string token);
     float get_real(std::string token);
     // TODO: Add sopport for property and history labels
+
+    // === Image area ===
+    std::vector<ImageRecord> get_image_records(Metadata &meta, BinaryLabel &bin_label, Layout &layout, Dimensions &dim);
 };
 
 #endif // _PARSER_HPP_
