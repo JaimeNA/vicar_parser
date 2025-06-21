@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
+#include <optional>
 
 #include <vicar.hpp>
 
@@ -26,16 +27,23 @@ public:
 
 private:
     std::ifstream file;
+    int lblsize;    // Will always be the first label
 
     // === Labels area ===
-    /* Returns string after '=' */
+
+    std::optional<std::string> get_next_token(int end);
     bool get_token(std::string *str, std::string token);
+
+    /* Returns string after '=' */
     std::string get_value(std::string token);
 
-    std::string get_string(std::string token); // Parse the vicar string, remove ' ' 
+    std::string get_string(std::string token); // Parse the vicar string, remove ' '
     int get_integer(std::string token);
     float get_real(std::string token);
-    // TODO: Add sopport for property and history labels
+
+    // Yes, return by value is prefered
+    std::unordered_map<std::string, std::vector<std::string>> get_properties();
+    std::unordered_map<std::string, std::vector<std::string>> get_history();
 
     // === Image area ===
     std::vector<ImageRecord> get_image_records(Metadata &meta, BinaryLabel &bin_label, Layout &layout, Dimensions &dim);

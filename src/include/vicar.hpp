@@ -69,7 +69,13 @@ struct ImageRecord {
 
 class Vicar {
 public:
-	Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions, std::vector<ImageRecord> image_records);
+	Vicar(Metadata metadata,
+        BinaryLabel bin_label,
+        Layout layout,
+        Dimensions dimensions,
+        std::vector<ImageRecord> image_records,
+        std::unordered_map<std::string, std::vector<std::string>> properties,
+        std::unordered_map<std::string, std::vector<std::string>> history);
 	~Vicar();
 
     void print();
@@ -90,10 +96,10 @@ private:
     Dimensions dimensions;
     
     // Property labels
-    std::vector<std::string> properties;
+    std::unordered_map<std::string, std::vector<std::string>> properties;
 
     // History labels
-    std::vector<std::string> history;
+    std::unordered_map<std::string, std::vector<std::string>> history;
 
     // == Image area ===
     std::vector<ImageRecord> image_records;

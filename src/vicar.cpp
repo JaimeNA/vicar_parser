@@ -3,13 +3,22 @@
 //TODO: Switch to PNG or TIFF
 // === Public ===
 
-Vicar::Vicar(Metadata metadata, BinaryLabel bin_label, Layout layout, Dimensions dimensions, std::vector<ImageRecord> image_records) {
+Vicar::Vicar(Metadata metadata,
+        BinaryLabel bin_label,
+        Layout layout,
+        Dimensions dimensions,
+        std::vector<ImageRecord> image_records,
+        std::unordered_map<std::string, std::vector<std::string>> properties,
+        std::unordered_map<std::string, std::vector<std::string>> history) {
+
     this->metadata = metadata;
     this->bin_label = bin_label;
     this->layout = layout;
     this->dimensions = dimensions;
 
     this->image_records = image_records;
+    this->properties = properties;
+    this->history = history;
 }
 
 
@@ -83,7 +92,7 @@ void Vicar::make_pgm(const std::string filename) {
         }
     }
 
- //  draw_data(image, 8);
+    draw_data(image, 8);
 
 }
 

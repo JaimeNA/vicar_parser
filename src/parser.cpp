@@ -56,10 +56,22 @@ Parser::Parser(const std::string filename) {
     size_t size = 0;
 
     // Get number of bytes
-    file.seekg( 0, std::ios::end );
+    file.seekg(0, std::ios::end);
     size = file.tellg();
 
     std::cout << DEBUG_LOG("File size: ") << size << std::endl;
+
+    // Get labels size, always the first label
+    file.seekg(0, std::ios::beg);
+    std::string str;
+    if(file >> str) {
+        int i = str.find('=') + 1;
+
+        lblsize = std::stoi(str.substr(i));
+    } else {
+        std::cerr << "ERROR::Failed to fetch labels size" << std::endl;
+    }
+
 }
 
 Parser::~Parser() {
@@ -102,7 +114,7 @@ Vicar Parser::parse() {
     // Layout
     Layout layout;
 
-    layout.lblsize = get_integer("LBLSIZE");
+    layout.lblsize = lblsize;
     layout.bufsize = get_integer("BUFSIZ"); // Obsolete
     layout.dim = get_integer("DIM");
     layout.eol = get_integer("EOL");
@@ -147,29 +159,89 @@ Vicar Parser::parse() {
 
     dim.size_fourth = 0;
 
-    return Vicar(meta, bin_label, layout, dim, get_image_records(meta, bin_label, layout, dim));
+    std::unordered_map<std::string, std::vector<std::string>> p = get_properties();
+
+    for (auto i : p) {
+            std::cout << i.first << std::endl;
+        for (auto j : i.second)
+            std::cout << "  " << j << std::endl;
+    }
+
+    return Vicar(
+        meta,                                           // Metadata
+        bin_label,                                      // Binary label string
+        layout,                                         // Image layout (dimensions, bands, etc.)
+        dim,                                            // Dimension info
+        get_image_records(meta, bin_label, layout, dim),// Parsed image data
+        get_properties(),                               // Image properties
+        get_history()                                   // Image processing history
+    );
 }
 
 // === Labels area ===
 
-/* Returns string length if successful, otherwise returns -1 */
-bool Parser::get_token(std::string *str, std::string token) {
-    if (!file.is_open()) {
-        throw std::invalid_argument("ERROR::GET_TOKEN::Invalid file");
+/* Returns occurrences of a char inside a string */
+static int get_occurrences(std::string str, char c) {
+    int count = 0;
+
+    for (char i : str) {
+        if (i == c)
+            count++;
     }
 
+    return count;
+}
+
+/* Returns next token if there is any, ingores whitespaces inside quoted text */
+std::optional<std::string> Parser::get_next_token(int end) {
+    std::string to_return;
+
+    if (file >> to_return && file.tellg() < end) {
+
+        // Check for quotes, if the number isnt even, find the whole string
+        int quotes_count = get_occurrences(to_return, '\'');
+        if (quotes_count % 2) {
+
+            std::string next_token;
+            while (file >> next_token && file.tellg() < end && quotes_count % 2) {
+                to_return += " " + next_token;  // Add a whitespace in between for better clarity
+                quotes_count = get_occurrences(to_return, '\'');
+            }
+
+            // Check if the operation was successful
+            if (quotes_count % 2)
+                return std::nullopt;
+        }
+
+    } else {
+        return std::nullopt;
+    }
+
+    return to_return;
+
+}
+
+/* Returns first position of the token within the file if successful, otherwise returns -1 */
+bool Parser::get_token(std::string *str, std::string token) {
     file.seekg( 0, std::ios::beg );
     int eq_pos = 0;
 
-    // Look for a value with the token before the '='
-    while (file >> *str) {
-        eq_pos = str->find('=');
+    // Look for a value with the token before the '=', and stop if reached end of labels
+    auto result = get_next_token(lblsize);
+
+    while (result) {
+        
+        eq_pos = result.value().find('=');
 
         if (eq_pos == std::string::npos)
             continue;
 
-        if (str->substr(0, eq_pos) == token)
+        if (result.value().substr(0, eq_pos) == token){
+            *str = result.value();
             return true;
+        }
+
+        result = get_next_token(lblsize);
     }
 
     return false;
@@ -193,7 +265,7 @@ std::string Parser::get_value(std::string token) {
 std::string Parser::get_string(std::string token) {
     std::string str;
 
-    if (!get_token(&str, token)) {
+    if (get_token(&str, token) == -1) {
         throw std::invalid_argument("ERROR::STRING::Invalid file");
     }
 
@@ -206,7 +278,7 @@ std::string Parser::get_string(std::string token) {
 int Parser::get_integer(std::string token) {
     std::string str;
 
-    if (!get_token(&str, token)) {
+    if (get_token(&str, token) == -1) {
         throw std::invalid_argument("ERROR::INTEGER::Invalid file");
     }
 
@@ -217,11 +289,84 @@ float Parser::get_real(std::string token) {
     // TODO: Add support for RIEEE and VAX
     std::string str;
 
-    if (!get_token(&str, token)) {
+    if (get_token(&str, token) == -1) {
         throw std::invalid_argument("ERROR::REAL::Invalid file");
     }
 
     return std::stof(get_value(str));
+}
+
+
+std::unordered_map<std::string, std::vector<std::string>> Parser::get_history() {
+std::unordered_map<std::string, std::vector<std::string>> to_return;
+
+    
+    // Store current property here
+    std::string current;
+
+    if (!get_token(&current, "TASK")) {
+        std::cout << DEBUG_LOG("No history!") << std::endl;
+
+        return to_return;
+    }
+
+    to_return[current] = std::vector<std::string>(); // Create new vector
+
+    auto token = get_next_token(lblsize);
+
+    // Traverse file until end of labels or start of history
+    while (token) {
+        if (token.value().find("PROPERTY") != std::string::npos) {
+            current = token.value();
+
+            to_return[current] = std::vector<std::string>();
+        } else {
+            to_return[current].push_back(token.value());
+        }
+
+        token = get_next_token(lblsize);
+    }
+
+    return to_return;
+}
+
+std::unordered_map<std::string, std::vector<std::string>> Parser::get_properties() {
+    std::unordered_map<std::string, std::vector<std::string>> to_return;
+    
+    // Store current property here
+    std::string current;
+
+    if (!get_token(&current, "PROPERTY")) {
+        std::cout << DEBUG_LOG("No properties!") << std::endl;
+
+        return to_return;
+    }
+
+    /*
+     * Now, after running get_token, the current index inside the file points to the
+     * first property.
+     */
+
+    to_return[current] = std::vector<std::string>(); // Create new vector
+
+    auto token = get_next_token(lblsize);
+
+    // Traverse file until end of labels or start of history
+    while (token) {
+        if (token.value().find("PROPERTY") != std::string::npos) {
+            current = token.value();
+
+            to_return[current] = std::vector<std::string>();
+        } else if (token.value().find("TASK") != std::string::npos) { // Check if the history labels section was reached
+            break;
+        }else {
+            to_return[current].push_back(token.value());
+        }
+
+        token = get_next_token(lblsize);
+    }
+
+    return to_return;
 }
 
 // === Image area ===
@@ -248,8 +393,6 @@ std::vector<ImageRecord> Parser::get_image_records(Metadata &meta, BinaryLabel &
             pixel_size = 8;
             break;
     };
-
-    std::cout << DEBUG_LOG("Pixel size: ") << pixel_size << std::endl;
 
     // Move to the beggining of image records
     size_t binary_header_size = bin_label.num_lines_header*layout.recsize;
