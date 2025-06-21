@@ -1,6 +1,8 @@
 # vicar_parser
 Parser of the NASA JPL image file formar VICAR. 
 
+![image description](resources/demo_voyager.png)
+
 ## Header
 
 Refered as the labels section in the documentation(https://planetarydata.jpl.nasa.gov/img/w10n/voyager/VGISS_0030/DOCUMENT/VICAR.HTML), it containts system labels, porperty labels and history labels.
@@ -23,3 +25,13 @@ TARGET_NAME='NAC_FOCUS'  OBSERVATION_ID='FOCUS_TEST_200'    RADIANCE=-999.0  MIS
 ILLUMINANT='250W_TUN_NAC_COL'  TASK='ISS_EGSE'  USER='mad'  DAT_TIM='Tue Mar  5 20:43:31 1996'  COMMENT='+3O C
 POSITION        .020'  TASK='COPY'  USER='DDS812'  DAT_TIM='Wed Apr 30 08:53:39 1997'
 ```
+
+## Body
+
+This section contains the data, contains both the binary header and the binary prefixes, both of which are poorly documented. However, this are not entirely necessary for simple image viewing. The file can be read by records, which, in the case of an image, contains one row of pixels.
+
+## EOL
+
+TODO
+
+> **Note**: This is a WIP
