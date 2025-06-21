@@ -7,9 +7,12 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
-#include <math.h>
+
+#include <pgm_image.hpp>
 
 #define DEBUG_LOG(x) "DEBUG::" << x
+
+constexpr int MAX_PIXEL_SIZE = 8;
 
 /**
  * @brief Format of image pixels (e.g., BYTE, HALF, REAL, etc.)
@@ -73,6 +76,11 @@ public:
     void make_pgm(const std::string filename);
 
 private:
+    size_t get_pixel_size();    // TODO: Move image utils to their own file
+    int get_max_value();
+    int get_min_value();
+    void draw_data(PgmImage &image, int font_size);
+
     // === Labels area ===
     // System labels
     Metadata metadata;

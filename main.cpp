@@ -2,10 +2,10 @@
 
 int main(int argc, char **argv) {
 
-    Parser parser("resources/test.img");
+    Parser parser("resources/raw/voyager.img");
 
     Vicar img = parser.parse();
 
     img.print();
-    img.make_pgm("test.pgm");
+    img.make_pgm("resources/pgm/test.pgm");
 }
