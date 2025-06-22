@@ -159,7 +159,7 @@ Vicar Parser::parse() {
 
     dim.size_fourth = 0;
 
-    std::unordered_map<std::string, std::vector<std::string>> p = get_properties();
+    std::unordered_map<std::string, std::vector<std::string>> p = get_history();
 
     for (auto i : p) {
             std::cout << i.first << std::endl;
@@ -203,7 +203,7 @@ std::optional<std::string> Parser::get_next_token(int end) {
         if (quotes_count % 2) {
 
             std::string next_token;
-            while (file >> next_token && file.tellg() < end && quotes_count % 2) {
+            while (file.tellg() < end && quotes_count % 2 && file >> next_token) {
                 to_return += " " + next_token;  // Add a whitespace in between for better clarity
                 quotes_count = get_occurrences(to_return, '\'');
             }
@@ -230,11 +230,12 @@ bool Parser::get_token(std::string *str, std::string token) {
     auto result = get_next_token(lblsize);
 
     while (result) {
-        
         eq_pos = result.value().find('=');
 
-        if (eq_pos == std::string::npos)
+        if (eq_pos == std::string::npos){
+            result = get_next_token(lblsize);
             continue;
+        }
 
         if (result.value().substr(0, eq_pos) == token){
             *str = result.value();
@@ -296,11 +297,10 @@ float Parser::get_real(std::string token) {
     return std::stof(get_value(str));
 }
 
-
+// TODO: Make another function with the shared code with get_properties
 std::unordered_map<std::string, std::vector<std::string>> Parser::get_history() {
 std::unordered_map<std::string, std::vector<std::string>> to_return;
 
-    
     // Store current property here
     std::string current;
 
@@ -310,14 +310,23 @@ std::unordered_map<std::string, std::vector<std::string>> to_return;
         return to_return;
     }
 
+    // Remove unnecesary bits and leave only the string
+    std::string aux = get_value(current);
+
+    // Remove first and last characters
+    current = aux.substr(1, aux.size()-2);
+    
     to_return[current] = std::vector<std::string>(); // Create new vector
 
     auto token = get_next_token(lblsize);
 
     // Traverse file until end of labels or start of history
     while (token) {
-        if (token.value().find("PROPERTY") != std::string::npos) {
-            current = token.value();
+        if (token.value().find("TASK") != std::string::npos) {
+            aux = get_value(token.value());
+
+            // Remove first and last characters
+            current = aux.substr(1, aux.size()-2);
 
             to_return[current] = std::vector<std::string>();
         } else {
@@ -335,13 +344,19 @@ std::unordered_map<std::string, std::vector<std::string>> Parser::get_properties
     
     // Store current property here
     std::string current;
-
+    
     if (!get_token(&current, "PROPERTY")) {
         std::cout << DEBUG_LOG("No properties!") << std::endl;
 
         return to_return;
     }
 
+    // Remove unnecesary bits and leave only the string
+    std::string aux = get_value(current);
+
+    // Remove first and last characters
+    current = aux.substr(1, aux.size()-2);
+    
     /*
      * Now, after running get_token, the current index inside the file points to the
      * first property.
@@ -354,7 +369,10 @@ std::unordered_map<std::string, std::vector<std::string>> Parser::get_properties
     // Traverse file until end of labels or start of history
     while (token) {
         if (token.value().find("PROPERTY") != std::string::npos) {
-            current = token.value();
+            aux = get_value(token.value());
+
+            // Remove first and last characters
+            current = aux.substr(1, aux.size()-2);
 
             to_return[current] = std::vector<std::string>();
         } else if (token.value().find("TASK") != std::string::npos) { // Check if the history labels section was reached
