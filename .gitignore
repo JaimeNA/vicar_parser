@@ -1,0 +1,7 @@
+.vscode
+build
+vicar
+*.o
+src/*.o
+resources/raw/*
+resources/pgm/*
