@@ -1,4 +1,6 @@
-#include <vicar.hpp>
+#include "vicar.hpp"
+
+#include "pgm_image.hpp"
 
 //TODO: Switch to PNG or TIFF
 // === Public ===
@@ -92,7 +94,7 @@ void Vicar::make_pgm(const std::string filename) {
         }
     }
 
-    draw_data(image, 8);
+    //draw_data(image, 8);
 
 }
 
@@ -145,6 +147,30 @@ int Vicar::get_max_value() {
     return max_value;
 }
 
+// static void Vicar::draw_data(PgmImage &image, int font_size) {
+
+//     int max_value = get_max_value();
+//     int current_row =1; // Start at text row 5
+
+//     // Binary label
+//     image.draw_text("--- BINARY LABEL --- ", font_size, 100, font_size * 2 * current_row++, max_value);
+
+//     image.draw_text("Bytes of binary prefix: " + std::to_string(bin_label.num_bytes_prefix), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Lines of binary header: " + std::to_string(bin_label.num_lines_header), font_size, 100, font_size * 2 * current_row++, max_value);
+
+//     // Layout attributes
+//     image.draw_text("--- LAYOUT --- ", font_size, 100, font_size * 2 * current_row++, max_value);
+
+//     image.draw_text("Label storage area: "  + std::to_string(layout.lblsize), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Buffer size(obsolete): " + std::to_string(layout.bufsize), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Dimensions: " + std::to_string(layout.dim), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("EOL: " + std::to_string(layout.eol), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Record size: " + std::to_string(layout.recsize), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Number of lines: " + std::to_string(layout.num_lines), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Number of samples: " + std::to_string(layout.num_samples), font_size, 100, font_size * 2 * current_row++, max_value);
+//     image.draw_text("Number of bands: " + std::to_string(layout.num_bands), font_size, 100, font_size * 2 * current_row++, max_value);
+// }
+
 // Inefficient, remove
 int Vicar::get_min_value() {
 
@@ -173,28 +199,4 @@ int Vicar::get_min_value() {
         }
     }
     return min_value;
-}
-
-void Vicar::draw_data(PgmImage &image, int font_size) {
-
-    int max_value = get_max_value();
-    int current_row =1; // Start at text row 5
-
-    // Binary label
-    image.draw_text("--- BINARY LABEL --- ", font_size, 100, font_size * 2 * current_row++, max_value);
-
-    image.draw_text("Bytes of binary prefix: " + std::to_string(bin_label.num_bytes_prefix), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Lines of binary header: " + std::to_string(bin_label.num_lines_header), font_size, 100, font_size * 2 * current_row++, max_value);
-
-    // Layout attributes
-    image.draw_text("--- LAYOUT --- ", font_size, 100, font_size * 2 * current_row++, max_value);
-
-    image.draw_text("Label storage area: "  + std::to_string(layout.lblsize), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Buffer size(obsolete): " + std::to_string(layout.bufsize), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Dimensions: " + std::to_string(layout.dim), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("EOL: " + std::to_string(layout.eol), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Record size: " + std::to_string(layout.recsize), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Number of lines: " + std::to_string(layout.num_lines), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Number of samples: " + std::to_string(layout.num_samples), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Number of bands: " + std::to_string(layout.num_bands), font_size, 100, font_size * 2 * current_row++, max_value);
 }

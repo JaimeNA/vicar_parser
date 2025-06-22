@@ -1,4 +1,4 @@
-#include <parser.hpp>
+#include "parser.hpp"
 
 std::unordered_map<std::string, Format> string_to_format = { { "BYTE", Format::BYTE },
                                                     { "HALF", Format::HALF },

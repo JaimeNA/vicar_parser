@@ -1,4 +1,4 @@
-#include <pgm_image.hpp>
+#include "pgm_image.hpp"
 
 PgmImage::PgmImage(const std::string filename, std::size_t width, std::size_t height, std::size_t max_value)
         : ImageBuilder(filename, width, height) {
@@ -9,7 +9,6 @@ PgmImage::PgmImage(const std::string filename, std::size_t width, std::size_t he
     else
         this->pixel_size = 2;
 
-    // Initialize image
     // https://netpbm.sourceforge.net/doc/pgm.html
     // Use a string as a buffer to place the parsed metadata before writing it into the file
     std::string buffer = "P5";

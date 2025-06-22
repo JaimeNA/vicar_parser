@@ -1,7 +1,7 @@
 #ifndef _PGM_IMAGE_HPP_
 #define _PGM_IMAGE_HPP_
 
-#include <image_builder.hpp>
+#include "image_builder.hpp"
 
 constexpr int MAX_UINT8 = 255;
 
