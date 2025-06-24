@@ -28,7 +28,7 @@ POSITION        .020'  TASK='COPY'  USER='DDS812'  DAT_TIM='Wed Apr 30 08:53:39 
 
 ## Body
 
-This section contains the data, contains both the binary header and the binary prefixes, both of which are poorly documented. However, this are not entirely necessary for simple image viewing. The file can be read by records, which, in the case of an image, contains one row of pixels.
+This section contains the data, including both the binary header and the binary prefixes, both of which are poorly documented. However, these are not entirely necessary for simple image viewing. The file can be read by records, which, in the case of an image, contain one row of pixels.
 
 ## EOL
 
