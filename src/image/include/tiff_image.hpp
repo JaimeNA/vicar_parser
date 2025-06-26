@@ -11,6 +11,7 @@ constexpr int DESCRIPTOR_SIZE = 12;
 
 constexpr int DIRECTORY_SIZE = 16;   // Let's start with 1 for simplicity
 constexpr int DIRECTORY_OFFSET = HEADER_SIZE + 2; // Two byte offset for directory size
+constexpr int DATA_OFFSET = DIRECTORY_OFFSET + DIRECTORY_SIZE*12 + 4; // Four empty bytes after the ifd
 
 constexpr int TIFF_ID = 42;
 

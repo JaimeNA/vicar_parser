@@ -60,45 +60,44 @@ void Vicar::print() {
 
 void Vicar::make_pgm(const std::string filename) {
 
+    if (metadata.type != Type::IMAGE) {
+        std::cerr << "ERROR::DRAW_SQUARE: Not an image file" << std::endl;
+        return ;
+    }
+    
+    int pixel_size = get_pixel_size();
+   
+    if (pixel_size > 2) {
+        std::cerr << "ERROR::MAKE_PGM: Unsopported pixel size" << std::endl;
+    }
+
+    std::cout << DEBUG_LOG("Pixel size: ") << pixel_size << std::endl;
+
+    int min_value = get_min_value();
+
+   // PgmImage image(filename, dimensions.size_first, dimensions.size_second, get_max_value() - min_value);
+
     TiffImage image(filename, dimensions.size_first, dimensions.size_second, TiffImageType::BILEVEL);
 
+    uint8_t value[MAX_PIXEL_SIZE]; // Array used for storing the value
 
-    // if (metadata.type != Type::IMAGE) {
-    //     std::cerr << "ERROR::DRAW_SQUARE: Not an image file" << std::endl;
-    //     return ;
-    // }
-    
-    // int pixel_size = get_pixel_size();
-   
-    // if (pixel_size > 2) {
-    //     std::cerr << "ERROR::MAKE_PGM: Unsopported pixel size" << std::endl;
-    // }
+    for (int i = 0; i < dimensions.size_second; i++) {
+        for (int j = 0; j < dimensions.size_first; j++) {
 
-    // std::cout << DEBUG_LOG("Pixel size: ") << pixel_size << std::endl;
+            if (pixel_size == 1) {
+                value[0] = image_records[i].data[j];
+            } else {
+                // Create the pixel value
+                for (int k = 0; k < pixel_size; k++) {
+                    value[k] = image_records[i].data[j*2 + k];
+                }
+            }
+            image.put_pixel(j, i, *((uint16_t*)value) - min_value);
+            //image.put_pixel(j, i, *((uint16_t*)value) - min_value);
+        }
+    }
 
-    // int min_value = get_min_value();
-
-    // PgmImage image(filename, dimensions.size_first, dimensions.size_second, get_max_value() - min_value);
-
-    // uint8_t value[MAX_PIXEL_SIZE]; // Array used for storing the value
-
-    // for (int i = 0; i < dimensions.size_second; i++) {
-    //     for (int j = 0; j < dimensions.size_first; j++) {
-
-    //         if (pixel_size == 1) {
-    //             value[0] = image_records[i].data[j];
-    //         } else {
-    //             // Create the pixel value
-    //             for (int k = 0; k < pixel_size; k++) {
-    //                 value[k] = image_records[i].data[j*2 + k];
-    //             }
-    //         }
-
-    //         image.put_pixel(j, i, *((uint16_t*)value) - min_value);
-    //     }
-    // }
-
-    //draw_data(image, 8);
+   // draw_data(image, 8);
 
 }
 

@@ -7,32 +7,31 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
 
     write_header();
     
-    write_ifd_entry(256, 3, 1, 100);               // ImageWidth
-    write_ifd_entry(257, 3, 1, 100);              // ImageLength
+    // Write entries
+    write_ifd_entry(256, 3, 1, width);               // ImageWidth
+    write_ifd_entry(257, 3, 1, height);              // ImageLength
     write_ifd_entry(258, 3, 1, 8);                   // BitsPerSample
     write_ifd_entry(259, 3, 1, 1);                   // No compression
     write_ifd_entry(262, 3, 1, 1);                   // BlackIsZero
-    write_ifd_entry(273, 4, 1, DIRECTORY_OFFSET+DIRECTORY_SIZE + 200);        // Offset to image data
+    write_ifd_entry(273, 4, 1, DATA_OFFSET);        // Offset to image data
     write_ifd_entry(277, 3, 1, 1);                   // SamplesPerPixel
-    write_ifd_entry(278, 4, 1, 1);              // RowsPerStrip
-    write_ifd_entry(279, 4, 1, 100*100);    // Byte count of image data
+    write_ifd_entry(278, 4, 1, width);              // RowsPerStrip
+    write_ifd_entry(279, 4, 1, width*height);    // Byte count of image data
 
     file.seekp(DIRECTORY_OFFSET + next_ifd_offset);
 
+    // NOTE: WIP
     uint32_t to_write = 0;
     file.write(reinterpret_cast<char*>(&to_write), 4);
 
-    file.seekp(DIRECTORY_OFFSET+DIRECTORY_SIZE + 200);
-    for (int i = 0; i < 100; i++) {
-        for (int j = 0; j < 100; j++) {
-            int value = i % 2;
-            file.write(reinterpret_cast<char*>(&value), 1);
-        }
-    }
 }
 
 void TiffImage::put_pixel(int x, int y, int value) {
-    
+    int pixel_size = 1;
+    std::size_t offset = (width*y*pixel_size) + x*pixel_size;
+    file.seekp(DATA_OFFSET + offset);
+
+    file.write(reinterpret_cast<char*>(&value), pixel_size);
 }
 
 // === Image writing utils ===
@@ -71,8 +70,8 @@ void TiffImage::write_ifd_entry(uint16_t tag, uint16_t type, uint32_t count, uin
     // NOTE: Write to descriptor in little-endian format
     char descriptor[DESCRIPTOR_SIZE];
 
-    descriptor[0] = tag & 0xFF;
-    descriptor[1] = (tag >> 8) & 0xFF;
+    descriptor[0] = tag & 0x00FF;
+    descriptor[1] = (tag >> 8) & 0x00FF;
 
     descriptor[2] = type & 0xFF;    // TODO: Use memcpy too?
     descriptor[3] = (type >> 8) & 0xFF;
@@ -92,5 +91,5 @@ void TiffImage::write_ifd_entry(uint16_t tag, uint16_t type, uint32_t count, uin
     ifd_elem_count++;
 
     file.seekp(DIRECTORY_OFFSET);
-    file.write(reinterpret_cast<char*>(&ifd_elem_count), 4);
+    file.write(reinterpret_cast<char*>(&ifd_elem_count), 2);
 }
