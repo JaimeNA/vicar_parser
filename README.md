@@ -1,5 +1,9 @@
 # vicar_parser
-Parser of the NASA JPL image file formar VICAR. 
+Parser of the NASA JPL image file formar VICAR. This projects aims to provide with a functional library for processing raw images transmitted by interplanetary spacecraft, such as voyager and cassini, to name a few. 
+
+## Current state
+
+THe project as is now is rudimentary at best, but functional nonetheless. I'm planning to keep working on it, but not as often as I would wish to.
 
 ![image description](resources/demo_voyager.png)
 
