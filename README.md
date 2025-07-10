@@ -3,7 +3,7 @@ Parser of the NASA JPL image file formar VICAR. This projects aims to provide wi
 
 ## Current state
 
-THe project as is now is rudimentary at best, but functional nonetheless. I'm planning to keep working on it, but not as often as I would wish to.
+The project as is now is functional, but there are still areas to improve. I'm planning to keep updating it, but not as often as I would wish to.
 
 ![image description](resources/demo_voyager.png)
 

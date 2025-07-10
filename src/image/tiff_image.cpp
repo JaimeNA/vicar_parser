@@ -12,22 +12,27 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
     write_ifd_entry(257, 3, 1, height);              // ImageLength
     write_ifd_entry(258, 3, 1, 8);                   // BitsPerSample
     write_ifd_entry(259, 3, 1, 1);                   // No compression
-    write_ifd_entry(262, 3, 1, 1);                   // BlackIsZero
+    write_ifd_entry(262, 2, 1, 1);                   // BlackIsZero
     write_ifd_entry(273, 4, 1, DATA_OFFSET);        // Offset to image data
     write_ifd_entry(277, 3, 1, 1);                   // SamplesPerPixel
     write_ifd_entry(278, 4, 1, width);              // RowsPerStrip
     write_ifd_entry(279, 4, 1, width*height);    // Byte count of image data
 
+
+    write_ifd_entry(282, 4, 1, 1);
+    write_ifd_entry(283, 4, 1, 1);
+    write_ifd_entry(296, 3, 1, 2);
+
     file.seekp(DIRECTORY_OFFSET + next_ifd_offset);
 
-    // NOTE: WIP
+    // End descriptor table with 4 null bytes
     uint32_t to_write = 0;
     file.write(reinterpret_cast<char*>(&to_write), 4);
 
 }
 
 void TiffImage::put_pixel(int x, int y, int value) {
-    int pixel_size = 1;
+    int pixel_size = 3;
     std::size_t offset = (width*y*pixel_size) + x*pixel_size;
     file.seekp(DATA_OFFSET + offset);
 
@@ -70,15 +75,12 @@ void TiffImage::write_ifd_entry(uint16_t tag, uint16_t type, uint32_t count, uin
     // NOTE: Write to descriptor in little-endian format
     char descriptor[DESCRIPTOR_SIZE];
 
-    descriptor[0] = tag & 0x00FF;
-    descriptor[1] = (tag >> 8) & 0x00FF;
+    std::memcpy(&descriptor[0], &tag, 2); 
 
-    descriptor[2] = type & 0xFF;    // TODO: Use memcpy too?
-    descriptor[3] = (type >> 8) & 0xFF;
+    std::memcpy(&descriptor[2], &type, 2); 
 
     std::memcpy(&descriptor[4], &count, 4); 
 
-    // TODO: Remove magic number
     std::memcpy(&descriptor[8], &offset, 4); 
 
     // Write into file

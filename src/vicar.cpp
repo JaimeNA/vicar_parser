@@ -3,7 +3,6 @@
 #include "pgm_image.hpp"
 #include "tiff_image.hpp"
 
-//TODO: Switch to PNG or TIFF
 // === Public ===
 
 Vicar::Vicar(Metadata metadata,
