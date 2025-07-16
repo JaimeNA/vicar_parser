@@ -12,11 +12,11 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
     write_ifd_entry(257, 3, 1, height);              // ImageLength
     write_ifd_entry(258, 3, 1, 8);                   // BitsPerSample
     write_ifd_entry(259, 3, 1, 1);                   // No compression
-    write_ifd_entry(262, 2, 1, 1);                   // BlackIsZero
+    write_ifd_entry(262, 2, 1, 2);                   // Photometric interpretation
     write_ifd_entry(273, 4, 1, DATA_OFFSET);        // Offset to image data
-    write_ifd_entry(277, 3, 1, 1);                   // SamplesPerPixel
-    write_ifd_entry(278, 4, 1, width);              // RowsPerStrip
-    write_ifd_entry(279, 4, 1, width*height);    // Byte count of image data
+    write_ifd_entry(277, 3, 1, 3);                   // SamplesPerPixel
+    write_ifd_entry(278, 4, 1, width*3);              // RowsPerStrip
+    write_ifd_entry(279, 4, 1, width*height*3);    // Byte count of image data
 
 
     write_ifd_entry(282, 4, 1, 1);
