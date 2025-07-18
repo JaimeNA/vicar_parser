@@ -1,16 +1,14 @@
 #include "pgm_image.hpp"
 
-PgmImage::PgmImage(const std::string filename, std::size_t width, std::size_t height, std::size_t max_value)
-        : ImageBuilder(filename, width, height) {
+PgmImage::PgmImage(const std::string filename, std::size_t width, std::size_t height, int pixel_size)
+        : ImageBuilder(filename, width, height, pixel_size) {
   
-    // Determine number of bytes for each pixel, max is 2 bytes
-    if (max_value <= MAX_UINT8)
-        this->pixel_size = 1;
-    else
-        this->pixel_size = 2;
+    // NOTE: Max pixel size for PGM images is 2
+    if (pixel_size > 2)
+        throw std::invalid_argument("ERROR::PGM_IMAGE::Invalid pixel size");
 
     // https://netpbm.sourceforge.net/doc/pgm.html
-    // Use a string as a buffer to place the parsed metadata before writing it into the file
+    // Use a string the buffer to place the parsed metadata before writing it into the file
     std::string buffer = "P5";
 
     file.write(&buffer[0], buffer.size()); // Add identifier
@@ -28,18 +26,16 @@ PgmImage::PgmImage(const std::string filename, std::size_t width, std::size_t he
     file.write(&buffer[0], buffer.size());
     file.put('\n');
 
-    buffer = std::to_string(max_value);
+    buffer = std::to_string(pow(2, pixel_size*8)); // Get the max absolute possible value, based on the pixel size
     
     file.write(&buffer[0], buffer.size());
     file.put('\n');
 
-    header_size = file.tellp() + 1; // Get header size by checking our current position
+    header_size = file.tellp() + 1; // Get the header size by checking the current position
 }
 
 void PgmImage::put_pixel(int x, int y, int value) {
     // TODO: Add bound checks
-    // Go to the corresponding row starting
-
     std::size_t offset = (width*y*pixel_size) + x*pixel_size;
     file.seekp(header_size + offset);
 

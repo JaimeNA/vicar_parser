@@ -8,13 +8,13 @@ constexpr int MAX_UINT8 = 255;
 class PgmImage : public ImageBuilder {
 public:
 
-    PgmImage(const std::string filename, std::size_t width, std::size_t height, std::size_t max_value);
+    PgmImage(const std::string filename, std::size_t width, std::size_t height, int pixel_size);
 
     void put_pixel(int x, int y, int value);
     void set_max_value(int max_value);
 
 private:
-    std::size_t header_size, pixel_size;
+    std::size_t header_size;
 
 };
 

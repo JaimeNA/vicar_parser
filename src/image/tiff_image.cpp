@@ -1,7 +1,7 @@
 #include "tiff_image.hpp"
 
-TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t height, TiffImageType type)
-        : ImageBuilder(filename, width, height) {
+TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t height, int pixel_size, TiffImageType type)
+        : ImageBuilder(filename, width, height, pixel_size) {
  
     this->type = type;
 
@@ -10,13 +10,13 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
     // Write entries
     write_ifd_entry(256, 3, 1, width);               // ImageWidth
     write_ifd_entry(257, 3, 1, height);              // ImageLength
-    write_ifd_entry(258, 3, 1, 8);                   // BitsPerSample
+    write_ifd_entry(258, 3, 1, pixel_size*2);        // BitsPerSample
     write_ifd_entry(259, 3, 1, 1);                   // No compression
     write_ifd_entry(262, 2, 1, 2);                   // Photometric interpretation
-    write_ifd_entry(273, 4, 1, DATA_OFFSET);        // Offset to image data
+    write_ifd_entry(273, 4, 1, DATA_OFFSET);         // Offset to image data
     write_ifd_entry(277, 3, 1, 3);                   // SamplesPerPixel
-    write_ifd_entry(278, 4, 1, width*3);              // RowsPerStrip
-    write_ifd_entry(279, 4, 1, width*height*3);    // Byte count of image data
+    write_ifd_entry(278, 4, 1, width*3);             // RowsPerStrip
+    write_ifd_entry(279, 4, 1, width*height*3);      // Byte count of image data
 
 
     write_ifd_entry(282, 4, 1, 1);
@@ -32,10 +32,9 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
 }
 
 void TiffImage::put_pixel(int x, int y, int value) {
-    int pixel_size = 3;
     std::size_t offset = (width*y*pixel_size) + x*pixel_size;
     file.seekp(DATA_OFFSET + offset);
-
+    
     file.write(reinterpret_cast<char*>(&value), pixel_size);
 }
 

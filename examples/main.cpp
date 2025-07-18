@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
     std::string out_file(argv[2]);
    // img.print();
-    img.make_image(out_file);
+    img.make_image(out_file, true);
 
     std::cout << in_file << " " << out_file << std::endl;
 }

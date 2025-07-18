@@ -1,5 +1,8 @@
 #include "vicar.hpp"
 
+#include "pgm_image.hpp"
+#include "tiff_image.hpp"
+
 // === Public ===
 
 Vicar::Vicar(Metadata metadata,
@@ -25,45 +28,40 @@ Vicar::~Vicar() {
     //TODO: Manage
 }
 
-void Vicar::print() {
-    std::cout << "====== DATA ======" << std::endl << std::endl;
+std::string Vicar::to_string() {
+
+    std::string to_return;
+
+    to_return += "====== DATA ====== \n\n";
 
     // Binary label
-    std::cout << "--- BINARY LABEL --- " << std::endl;
-    std::cout << "Binary label: " << bin_label.type << std::endl;
-    std::cout << "Bytes of binary prefix: " << bin_label.num_bytes_prefix << std::endl;
-    std::cout << "Lines of binary header: " << bin_label.num_lines_header << std::endl << std::endl;
+    to_return += "--- BINARY LABEL --- \n";
+    to_return += "Binary label: " + bin_label.type + "\n";
+    to_return += "Bytes of binary prefix: " + std::to_string(bin_label.num_bytes_prefix) + "\n";
+    to_return += "Lines of binary header: " + std::to_string(bin_label.num_lines_header) + "\n\n";
 
     // Layout attributes
-    std::cout << "--- LAYOUT --- " << std::endl;
-    std::cout << "Label storage area: " << layout.lblsize << std::endl;
-    std::cout << "Buffer size(obsolete): " << layout.bufsize << std::endl;
-    std::cout << "Dimensions: " << layout.dim << std::endl;
-    std::cout << "EOL: " << layout.eol << std::endl;
-    std::cout << "Record size: " << layout.recsize << std::endl;
-    std::cout << "Number of lines: " << layout.num_lines << std::endl;
-    std::cout << "Number of samples: " << layout.num_samples << std::endl;
-    std::cout << "Number of bands: " << layout.num_bands << std::endl << std::endl;
+    to_return += "--- LAYOUT --- \n";
+    to_return += "Label storage area: " + std::to_string(layout.lblsize) + "\n";
+    to_return += "Buffer size(obsolete): " + std::to_string(layout.bufsize) + "\n";
+    to_return += "Dimensions: " + std::to_string(layout.dim) + "\n";
+    to_return += "EOL: " + std::to_string(layout.eol) + "\n";
+    to_return += "Record size: " + std::to_string(layout.recsize) + "\n";
+    to_return += "Number of lines: " + std::to_string(layout.num_lines) + "\n";
+    to_return += "Number of samples: " + std::to_string(layout.num_samples) + "\n";
+    to_return += "Number of bands: " + std::to_string(layout.num_bands) + "\n\n";
 
     // Dimensions
-    std::cout << "--- DIMENSIONS --- " << std::endl;
-    std::cout << "First dimension size: " << dimensions.size_first << std::endl;
-    std::cout << "Second dimension size: " << dimensions.size_second << std::endl;
-    std::cout << "Third dimension size: " << dimensions.size_third << std::endl;
-    std::cout << "Fourth dimension size: " << dimensions.size_fourth << std::endl << std::endl;
+    to_return += "--- DIMENSIONS --- \n";;
+    to_return += "First dimension size: " + std::to_string(dimensions.size_first) + "\n";
+    to_return += "Second dimension size: " + std::to_string(dimensions.size_second) + "\n";
+    to_return += "Third dimension size: " + std::to_string(dimensions.size_third) + "\n";
+    to_return += "Fourth dimension size: " + std::to_string(dimensions.size_fourth) + "\n\n";
 
+    return to_return;
 }
 
-/* Normalizes de value to fit into a 32 bit integer */
-static int get_normalized_value(auto value) {
-    int size = sizeof(value);
-
-    std::cout << DEBUG_LOG("Pixel size: ") << size << std::endl;
-
-    return 22;
-}
-
-void Vicar::make_image(const std::string filename) {
+void Vicar::make_image(const std::string filename, bool draw_data) {
 
     if (metadata.type != Type::IMAGE) {
         std::cerr << "ERROR::MAKE_IMAGE: Not an image file" << std::endl;
@@ -77,7 +75,7 @@ void Vicar::make_image(const std::string filename) {
     }
 
 
-    TiffImage image(filename, dimensions.size_first, dimensions.size_second, TiffImageType::BILEVEL);
+    TiffImage image(filename, dimensions.size_first, dimensions.size_second, pixel_size, TiffImageType::BILEVEL);
 
     uint8_t value[MAX_PIXEL_SIZE]; // Array used for storing the value
 
@@ -92,10 +90,13 @@ void Vicar::make_image(const std::string filename) {
                     value[k] = image_records[i].data[j*2 + k];
                 }
             }
-           // image.put_pixel(j, i, *((uint16_t*)value) - min_value);
+           // image.put_pixel(j, i, 100);
             //image.put_pixel(j, i, *((uint16_t*)value) - min_value);
         }
     }
+
+    if (draw_data) 
+        image.draw_text(to_string(), 8, 100, 100, 255);
 
     //draw_data(image, 8);
 
@@ -120,26 +121,3 @@ std::size_t Vicar::get_pixel_size() {
     };
 }
 
-void Vicar::draw_data(ImageBuilder &image, int font_size) {
-
-    int max_value = 256;
-    int current_row =1; // Start at text row 5
-
-    // Binary label
-    image.draw_text("--- BINARY LABEL --- ", font_size, 100, font_size * 2 * current_row++, max_value);
-
-    image.draw_text("Bytes of binary prefix: " + std::to_string(bin_label.num_bytes_prefix), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Lines of binary header: " + std::to_string(bin_label.num_lines_header), font_size, 100, font_size * 2 * current_row++, max_value);
-
-    // Layout attributes
-    image.draw_text("--- LAYOUT --- ", font_size, 100, font_size * 2 * current_row++, max_value);
-
-    image.draw_text("Label storage area: "  + std::to_string(layout.lblsize), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Buffer size(obsolete): " + std::to_string(layout.bufsize), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Dimensions: " + std::to_string(layout.dim), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("EOL: " + std::to_string(layout.eol), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Record size: " + std::to_string(layout.recsize), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Number of lines: " + std::to_string(layout.num_lines), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Number of samples: " + std::to_string(layout.num_samples), font_size, 100, font_size * 2 * current_row++, max_value);
-    image.draw_text("Number of bands: " + std::to_string(layout.num_bands), font_size, 100, font_size * 2 * current_row++, max_value);
-}

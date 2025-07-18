@@ -8,9 +8,6 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "pgm_image.hpp"
-#include "tiff_image.hpp"
-
 #define DEBUG_LOG(x) "DEBUG::" << x
 
 constexpr int MAX_PIXEL_SIZE = 8;
@@ -79,9 +76,8 @@ public:
         std::unordered_map<std::string, std::vector<std::string>> history);
 	~Vicar();
 
-    void print();
-    void make_image(const std::string filename);
-    void draw_data(ImageBuilder &image, int font_size);
+    std::string to_string();
+    void make_image(const std::string filename, bool draw_data);
 
 private:
     size_t get_pixel_size();    // TODO: Move image utils to their own file

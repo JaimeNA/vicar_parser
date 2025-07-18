@@ -18,7 +18,7 @@ constexpr int CHAR_BITMAP_HEIGHT = 16;
 class ImageBuilder {
     public:
 
-    ImageBuilder(const std::string filename, std::size_t width, std::size_t Height);
+    ImageBuilder(const std::string filename, std::size_t width, std::size_t height, int pixel_size);
     ~ImageBuilder();
 
     virtual void put_pixel(int x, int y, int value);
@@ -31,6 +31,7 @@ class ImageBuilder {
 protected:
     std::ofstream file;
     std::size_t width, height;
+    int pixel_size;
 
 };
 

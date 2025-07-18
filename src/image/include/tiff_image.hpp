@@ -20,7 +20,7 @@ enum class TiffImageType{BILEVEL = 0, GRAYSCALE, PALETTE_COLOR, RGB};
 class TiffImage : public ImageBuilder {
 public:
 
-    TiffImage(const std::string filename, std::size_t width, std::size_t height, TiffImageType type);
+    TiffImage(const std::string filename, std::size_t width, std::size_t height, int pixel_size, TiffImageType type);
 
     void put_pixel(int x, int y, int value);
 

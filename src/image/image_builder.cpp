@@ -133,9 +133,10 @@
     };
 
 
-ImageBuilder::ImageBuilder(const std::string filename, std::size_t width, std::size_t height) {
+ImageBuilder::ImageBuilder(const std::string filename, std::size_t width, std::size_t height, int pixel_size) {
     this->width = width;
     this->height = height;
+    this->pixel_size = pixel_size;
 
     file.open(filename, std::ios::out | std::ios::binary);
 
@@ -186,7 +187,16 @@ void ImageBuilder::draw_char(char c, int font_size, int x, int y, int value) {
 
 /* Draws text starting at provided coordinates(top-left corner of text) */
 void ImageBuilder::draw_text(const std::string str, int font_size, int x, int y, int value) {
+
+    int x_pos = x;
+
 	for (int i = 0; i < str.size(); i++) {
-        draw_char(str[i], font_size, x+i*font_size, y, value);
+        if (str[i] == '\n') {
+            y += font_size*2;   // Font height is twice the font size(AKA: the width)
+            x_pos = 0;
+        } else {
+            draw_char(str[i], font_size, x+x_pos*font_size, y, value);
+            x_pos++;
+        }
 	}
 }
