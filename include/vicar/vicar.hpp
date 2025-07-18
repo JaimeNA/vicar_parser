@@ -8,6 +8,9 @@
 #include <iostream>
 #include <unordered_map>
 
+#include "pgm_image.hpp"
+#include "tiff_image.hpp"
+
 #define DEBUG_LOG(x) "DEBUG::" << x
 
 constexpr int MAX_PIXEL_SIZE = 8;
@@ -77,12 +80,11 @@ public:
 	~Vicar();
 
     void print();
-    void make_pgm(const std::string filename);
+    void make_image(const std::string filename);
+    void draw_data(ImageBuilder &image, int font_size);
 
 private:
     size_t get_pixel_size();    // TODO: Move image utils to their own file
-    int get_max_value();
-    int get_min_value();
 
     // === Labels area ===
     // System labels

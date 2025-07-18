@@ -85,7 +85,7 @@ Vicar Parser::parse() {
 
     /*
     * This program looks only for the mandatory labels, support for others
-    * may be later implemented.
+    * may be implemented later.
     */
 
     // === System labels ===
@@ -93,7 +93,7 @@ Vicar Parser::parse() {
 
     // Metadata
     Metadata meta;
-
+    
     meta.format = string_to_format[get_string("FORMAT")];
     meta.type = string_to_type[get_string("TYPE")];
     meta.org = string_to_org[get_string("ORG")];
