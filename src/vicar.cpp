@@ -75,7 +75,7 @@ void Vicar::make_image(const std::string filename, bool draw_data) {
     }
 
 
-    TiffImage image(filename, dimensions.size_first, dimensions.size_second, pixel_size, TiffImageType::BILEVEL);
+    TiffImage image(filename, dimensions.size_first, dimensions.size_second, pixel_size, TiffImageType::GRAYSCALE);
 
     uint8_t value[MAX_PIXEL_SIZE]; // Array used for storing the value
 
@@ -90,15 +90,12 @@ void Vicar::make_image(const std::string filename, bool draw_data) {
                     value[k] = image_records[i].data[j*2 + k];
                 }
             }
-           // image.put_pixel(j, i, 100);
-            //image.put_pixel(j, i, *((uint16_t*)value) - min_value);
+            image.put_pixel(j, i, *((unsigned int*)value));
         }
     }
 
     if (draw_data) 
-        image.draw_text(to_string(), 8, 100, 100, 255);
-
-    //draw_data(image, 8);
+        image.draw_text(to_string(), 8, 100, 100, 0xFF);
 
 }
 

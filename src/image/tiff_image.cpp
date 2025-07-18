@@ -7,21 +7,41 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
 
     write_header();
     
+    // TODO: Finish defining the TIFF format used for images
+
     // Write entries
-    write_ifd_entry(256, 3, 1, width);               // ImageWidth
-    write_ifd_entry(257, 3, 1, height);              // ImageLength
-    write_ifd_entry(258, 3, 1, pixel_size*2);        // BitsPerSample
-    write_ifd_entry(259, 3, 1, 1);                   // No compression
-    write_ifd_entry(262, 2, 1, 2);                   // Photometric interpretation
-    write_ifd_entry(273, 4, 1, DATA_OFFSET);         // Offset to image data
-    write_ifd_entry(277, 3, 1, 3);                   // SamplesPerPixel
-    write_ifd_entry(278, 4, 1, width*3);             // RowsPerStrip
-    write_ifd_entry(279, 4, 1, width*height*3);      // Byte count of image data
 
+    // Common entries
+    write_ifd_entry(256, 3, 1, width);        // ImageWidth
+    write_ifd_entry(257, 3, 1, height);       // ImageLength
+    write_ifd_entry(258, 3, 1, 8);            // BitsPerSample
+    write_ifd_entry(259, 3, 1, 1);            // No compression
+    write_ifd_entry(273, 4, 1, DATA_OFFSET);  // Offset to image data
+    write_ifd_entry(278, 4, 1, width);        // RowsPerStrip
+    write_ifd_entry(279, 4, 1, width*height); // Byte count of image data
 
-    write_ifd_entry(282, 4, 1, 1);
-    write_ifd_entry(283, 4, 1, 1);
-    write_ifd_entry(296, 3, 1, 2);
+    // TODO: Remove magic numbers
+    switch(type) {
+        case TiffImageType::BILEVEL: 
+            throw std::invalid_argument("ERROR::TIFF_IMAGE::Not implemented");
+            break;
+        case TiffImageType::GRAYSCALE: 
+            write_ifd_entry(277, 3, 1, 1); // SamplesPerPixel
+            write_ifd_entry(262, 3, 1, 1); // BlackIsZero
+
+            break;
+        case TiffImageType::PALETTE_COLOR: 
+            throw std::invalid_argument("ERROR::TIFF_IMAGE::Not implemented");
+            break;
+        case TiffImageType::RGB: 
+            write_ifd_entry(262, 3, 1, 2); // Photometric interpretation
+            write_ifd_entry(277, 3, 1, 3); // SamplesPerPixel
+
+            write_ifd_entry(282, 4, 1, 1); // XResolution     
+            write_ifd_entry(283, 4, 1, 1); // YResolution
+            write_ifd_entry(296, 3, 1, 1); // ResolutionUnit
+            break;
+    };
 
     file.seekp(DIRECTORY_OFFSET + next_ifd_offset);
 
@@ -32,10 +52,28 @@ TiffImage::TiffImage(const std::string filename, std::size_t width, std::size_t 
 }
 
 void TiffImage::put_pixel(int x, int y, int value) {
-    std::size_t offset = (width*y*pixel_size) + x*pixel_size;
-    file.seekp(DATA_OFFSET + offset);
-    
-    file.write(reinterpret_cast<char*>(&value), pixel_size);
+    std::size_t offset;
+
+    switch(type) {
+        case TiffImageType::BILEVEL: 
+            throw std::invalid_argument("ERROR::TIFF_IMAGE::Not implemented");
+            break;
+        case TiffImageType::GRAYSCALE: 
+            offset = (width*y*pixel_size) + x*pixel_size;
+            file.seekp(DATA_OFFSET + offset);
+            
+            file.write(reinterpret_cast<char*>(&value), pixel_size);
+            break;
+        case TiffImageType::PALETTE_COLOR: 
+            throw std::invalid_argument("ERROR::TIFF_IMAGE::Not implemented");
+            break;
+        case TiffImageType::RGB: 
+            offset = (width*y*3) + x*3;
+            file.seekp(DATA_OFFSET + offset);
+            
+            file.write(reinterpret_cast<char*>(&value), 3);
+            break;
+    };
 }
 
 // === Image writing utils ===
