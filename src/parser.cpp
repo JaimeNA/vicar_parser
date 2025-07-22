@@ -50,7 +50,7 @@ Parser::Parser(const std::string filename) {
     
     if (!file.is_open()) {
         std::cerr << "ERROR::Failed to open file: " << filename << std::endl;
-        //return null;
+        return ;
     }
 
     size_t size = 0;
@@ -69,7 +69,7 @@ Parser::Parser(const std::string filename) {
 
         lblsize = std::stoi(str.substr(i));
     } else {
-        std::cerr << "ERROR::Failed to fetch labels size" << std::endl;
+        throw std::invalid_argument("ERROR::Failed to fetch labels size, not a VICAR file");
     }
 
 }
@@ -192,7 +192,7 @@ static int get_occurrences(std::string str, char c) {
     return count;
 }
 
-/* Returns next token if there is any, ingores whitespaces inside quoted text */
+/* Returns next token if there is any, ignores whitespaces inside quoted text */
 std::optional<std::string> Parser::get_next_token(int end) {
     std::string to_return;
 

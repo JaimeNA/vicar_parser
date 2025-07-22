@@ -34,13 +34,21 @@ int main(int argc, char **argv) {
 
     std::string in_file(argv[i++]);
 
-    Parser parser(in_file);
+    try {
+        Parser parser(in_file);
+        Vicar img = parser.parse();
 
-    Vicar img = parser.parse();
+        std::string out_file(argv[i]);
+        
+        img.make_image(out_file, draw_data);
 
-    std::string out_file(argv[i]);
-   // img.print();
-    img.make_image(out_file, draw_data);
+        std::cout << in_file << " " << out_file << std::endl;
+    } catch(std::invalid_argument e) {
+        std::cout << "Unable to parse file, maybe not a VICAR file?" << std::endl;
 
-    std::cout << in_file << " " << out_file << std::endl;
+        return -1;
+    }
+
+    return 0;
 }
+
