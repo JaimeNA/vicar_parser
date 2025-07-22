@@ -94,7 +94,7 @@ void Vicar::make_image(const std::string filename, bool draw_data) {
         }
     }
 
-    if (draw_data) 
+    if (draw_data)
         image.draw_text(to_string(), 8, 100, 100, 0xFF);
 
 }
