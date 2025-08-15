@@ -254,7 +254,6 @@ std::string Parser::get_value(std::string token) {
     // Check if '=' wasn't found
     if (i == std::string::npos || i + 1 >= token.size()) {
         throw std::invalid_argument("ERROR::GET_VALUE::Not found or invalid");
-        // TODO: Error handling, std::optional<T>
     }
 
     i++;    // Start after the '='
@@ -287,7 +286,6 @@ int Parser::get_integer(std::string token) {
 }
 
 float Parser::get_real(std::string token) {
-    // TODO: Add support for RIEEE and VAX
     std::string str;
 
     if (get_token(&str, token) == -1) {
@@ -297,7 +295,6 @@ float Parser::get_real(std::string token) {
     return std::stof(get_value(str));
 }
 
-// TODO: Make another function with the shared code with get_properties
 std::unordered_map<std::string, std::vector<std::string>> Parser::get_history() {
 std::unordered_map<std::string, std::vector<std::string>> to_return;
 
@@ -388,7 +385,6 @@ std::unordered_map<std::string, std::vector<std::string>> Parser::get_properties
 }
 
 // === Image area ===
-// TODO: Define internal structs more clearly, check if there is a better way of doing this
 std::vector<ImageRecord> Parser::get_image_records(Metadata &meta, BinaryLabel &bin_label, Layout &layout, Dimensions &dim) {
     size_t records_size = dim.size_second*dim.size_third;
     std::vector<ImageRecord> to_return(records_size);

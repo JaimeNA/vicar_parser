@@ -7,7 +7,9 @@ The project as is now is functional, but there are still areas to improve. I'm p
 
 ![image description](resources/demo_voyager.png)
 
-## Header
+## Format
+
+### Header
 
 Refered as the labels section in the documentation(https://planetarydata.jpl.nasa.gov/img/w10n/voyager/VGISS_0030/DOCUMENT/VICAR.HTML), it containts system labels, porperty labels and history labels.
 
@@ -15,7 +17,7 @@ Refered as the labels section in the documentation(https://planetarydata.jpl.nas
 - **Property labels**: Describe properties of the image in the image domain.
 - **History labels**: Describe the processing history of the image.
 
-### Example 
+#### Example 
 ```
 LBLSIZE=2072            FORMAT='HALF'  TYPE='IMAGE'  BUFSIZ=20480  DIM=3  EOL=0  RECSIZE=2072  ORG='BSQ'  NL=1024
 NS=1024  NB=1  N1=1024  N2=1024  N3=1  N4=0  NBB=24  NLB=1  HOST='VAX-VMS'  INTFMT='LOW'  REALFMT='VAX'  BHOST='SUN-4'
@@ -30,12 +32,12 @@ ILLUMINANT='250W_TUN_NAC_COL'  TASK='ISS_EGSE'  USER='mad'  DAT_TIM='Tue Mar  5 
 POSITION        .020'  TASK='COPY'  USER='DDS812'  DAT_TIM='Wed Apr 30 08:53:39 1997'
 ```
 
-## Body
+### Body
 
 This section contains the data, including both the binary header and the binary prefixes, both of which are poorly documented. However, these are not entirely necessary for simple image viewing. The file can be read by records, which, in the case of an image, contain one row of pixels.
 
-## EOL
+### EOL
 
-TODO
+If the labels expand beyond the space allocated for them, they go here.  
 
-> **Note**: This is a WIP
+> **TODO**: Add support to read the excess labels

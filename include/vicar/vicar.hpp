@@ -80,7 +80,7 @@ public:
     void make_image(const std::string filename, bool draw_data);
 
 private:
-    size_t get_pixel_size();    // TODO: Move image utils to their own file
+    size_t get_pixel_size(); 
 
     // === Labels area ===
     // System labels

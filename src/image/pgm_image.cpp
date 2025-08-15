@@ -35,7 +35,10 @@ PgmImage::PgmImage(const std::string filename, std::size_t width, std::size_t he
 }
 
 void PgmImage::put_pixel(int x, int y, int value) {
-    // TODO: Add bound checks
+    
+    if (x < 0 || y < 0 || x >= width || y >= height)
+        throw std::invalid_argument("ERROR::PGM::Out of bounds");
+
     std::size_t offset = (width*y*pixel_size) + x*pixel_size;
     file.seekp(header_size + offset);
 
