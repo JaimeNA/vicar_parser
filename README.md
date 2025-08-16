@@ -1,5 +1,5 @@
 # vicar_parser
-Parser library library of the NASA JPL image file formar VICAR. This projects aims to provide with a functional library for processing raw images transmitted by interplanetary spacecraft, such as voyager and cassini, to name a few. 
+Parser library of the NASA JPL image file formar VICAR. This projects aims to provide with a functional library for processing raw images transmitted by interplanetary spacecraft, such as voyager and cassini, to name a few. 
 
 ## Installation
 
